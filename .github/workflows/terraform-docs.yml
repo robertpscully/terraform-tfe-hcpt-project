@@ -1,15 +1,19 @@
 name: Terraform Docs
 
 on:
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
     paths: [ '**/*.tf', 'README.md' ]
+
+permissions:
+  contents: write
 
 jobs:
   terraform-docs:
     name: Check terraform-docs
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
