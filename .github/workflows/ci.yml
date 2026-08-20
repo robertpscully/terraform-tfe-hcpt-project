@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - name: Check formatting
         run: terraform fmt -check -recursive
   validate:
@@ -19,25 +19,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - name: Check formatting
         run: terraform validate 
 
   tfsec:
-    name: tfsec
+    name: trivysec
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: aquasecurity/tfsec-action@v1.0.3
+      - name: Run Trivy IaC scan
+        uses: aquasecurity/trivy-action@v1
         with:
-          soft_fail: false
+          scan-type: iac
+          directory: .
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: '1'
 
   checkov:
     name: Checkov
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: bridgecrewio/checkov-action@v12
+      - uses: bridgecrewio/checkov-action@v12.1347.0
         with:
           directory: .
           framework: terraform
