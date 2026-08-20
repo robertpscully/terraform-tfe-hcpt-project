@@ -3,6 +3,12 @@ A Terraform module to create a Terraform Cloud Project, with access management, 
 
 Creates the following resources
 
-HCP Terraform Project
-A member workspace used to manage resources for the Project using Terraform
-A team with Project Main
+ - HCP Terraform Project
+ - A member workspace used to manage resources for the Project using Terraform
+ - A team with Project Maintainer access
+ - An ephemeral token for the Project Maintainer team with a seven day expiry. This is assigned to a workspace environmen variable. This variable is associated with the Workspace Manager member workspace
+ - A team with Output Reader access
+ - An ephemeral token for the Output Reader team with a seven day expiry. This is assigned to a workspace environment varialbe. This variable is associated with a Project Variable Set that is assigned to the HCP Terraform Project.
+
+
+
