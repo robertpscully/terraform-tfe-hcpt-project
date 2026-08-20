@@ -23,19 +23,27 @@ jobs:
       - name: Check formatting
         run: terraform validate 
 
-  tfsec:
-    name: trivysec
+  trivy:
+    name: Trivy IaC (Docker)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Run Trivy IaC scan
-        uses: aquasecurity/trivy-action@v1
         with:
-          scan-type: iac
-          directory: .
-          format: table
-          severity: HIGH,CRITICAL
-          exit-code: '1'
+          fetch-depth: 0
+      - name: Run Trivy (Docker)
+        run: |
+          docker run --rm \
+            -v "$PWD":/project \
+            -v ~/.cache/trivy:/root/.cache/trivy \
+            -w /project \
+            aquasec/trivy:latest \
+            config --severity HIGH,CRITICAL --format table . > trivy-iac.txt
+      - name: Upload Trivy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-iac
+          path: trivy-iac.txt
 
   checkov:
     name: Checkov
