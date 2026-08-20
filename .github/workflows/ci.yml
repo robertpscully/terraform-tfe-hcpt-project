@@ -10,16 +10,24 @@ jobs:
     name: Terraform Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: hashicorp/setup-terraform@v3
       - name: Check formatting
         run: terraform fmt -check -recursive
+  validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v3
+      - name: Check formatting
+        run: terraform validate 
 
   tfsec:
     name: tfsec
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: aquasecurity/tfsec-action@v1.0.3
         with:
           soft_fail: false
@@ -28,7 +36,7 @@ jobs:
     name: Checkov
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
