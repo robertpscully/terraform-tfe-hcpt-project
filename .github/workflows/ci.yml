@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - name: Check formatting
         run: terraform fmt -check -recursive
   validate:
@@ -19,25 +19,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: hashicorp/setup-terraform@v3
-      - name: Check formatting
-        run: terraform validate 
+      - uses: hashicorp/setup-terraform@v4
+      - name: Validate terraform configuration 
+        run: terraform init && terraform validate 
 
-  tfsec:
-    name: tfsec
+  trivy:
+    name: Trivy IaC (Docker)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: aquasecurity/tfsec-action@v1.0.3
         with:
-          soft_fail: false
+          fetch-depth: 0
+      - name: Run Trivy (Docker)
+        run: |
+          docker run --rm \
+            -v "$PWD":/project \
+            -v ~/.cache/trivy:/root/.cache/trivy \
+            -w /project \
+            aquasec/trivy:latest \
+            config --severity HIGH,CRITICAL --format table . > trivy-iac.txt
+      - name: Upload Trivy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-iac
+          path: trivy-iac.txt
 
   checkov:
     name: Checkov
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: bridgecrewio/checkov-action@v12
+      - uses: bridgecrewio/checkov-action@v12.1347.0
         with:
           directory: .
           framework: terraform
