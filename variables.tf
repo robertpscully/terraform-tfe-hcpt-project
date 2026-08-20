@@ -87,3 +87,27 @@ variable "token_rotation_days" {
     error_message = "token_rotation_days must be a positive integer."
   }
 }
+
+variable "project_management_vcs" {
+  type = object({
+    identifier                 = string
+    branch                     = string
+    oauth_token_id             = string
+    github_app_installation_id = string
+    ingress_submodules         = bool
+    tags_regex                 = string
+  })
+  description = <<-EOT
+    Optional VCS repository configuration for the project management workspace.
+    Set this variable to an object with the following named keys to enable VCS-backed runs:
+      - identifier (required when enabling): "<org>/<repo>"
+      - branch: branch to use (default: repository default)
+      - oauth_token_id: oauth client token id (GitHub OAuth token ID)
+      - github_app_installation_id: GitHub App installation id (mutually exclusive with oauth_token_id)
+      - ingress_submodules: boolean to fetch submodules
+      - tags_regex: regex for tag-triggered runs
+
+    Leave as `null` (default) to disable VCS configuration.
+  EOT
+  default     = null
+}
